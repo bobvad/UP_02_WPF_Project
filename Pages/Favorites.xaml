@@ -1,0 +1,210 @@
+﻿<Page x:Class="UP_02.Pages.Favorites"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:UP_02.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="600" d:DesignWidth="800"
+      Title="Favorites"
+      Background="#1E1E1E">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" 
+                Background="#2D2D2D" 
+                CornerRadius="10" 
+                Padding="20" 
+                Margin="0,0,0,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <StackPanel>
+                        <TextBlock Text="Избранное" 
+                                   FontSize="28" 
+                                   FontWeight="Bold" 
+                                   Foreground="White"/>
+                        <TextBlock Text="Ваши сохраненные книги" 
+                                   FontSize="14" 
+                                   Foreground="#888888"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Border Grid.Column="1" 
+                        Background="#3C3C3C" 
+                        CornerRadius="5" 
+                        Height="40" 
+                        Margin="50,0,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                       
+                        <TextBox Grid.Column="1" 
+                                 x:Name="SearchTextBox"
+                                 Background="Transparent" 
+                                 BorderThickness="0" 
+                                 Foreground="White" 
+                                 VerticalAlignment="Center"
+                                 Padding="5,0,0,0"
+                                 TextChanged="SearchTextBox_TextChanged"/>
+                    </Grid>
+                </Border>
+
+                <Button Grid.Column="2"
+                        Content="Каталог"
+                        Background="#007ACC"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Padding="15,8"
+                        Margin="10,0,10,0"
+                        Cursor="Hand"
+                        Height="40"
+                        Click="GoToCatalog_Click"
+                        FontWeight="SemiBold"/>
+
+                <!-- Счетчик книг -->
+                <Border Grid.Column="3" 
+                        Background="#007ACC" 
+                        CornerRadius="20" 
+                        Padding="15,8" 
+                        Height="40">
+                    <TextBlock x:Name="FavoritesCountText" 
+                               Text="0 книг" 
+                               Foreground="White" 
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                </Border>
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" 
+                      VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl x:Name="FavoritesList" Margin="0,0,10,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="180" 
+                                Height="280" 
+                                Margin="10" 
+                                Background="#2D2D2D" 
+                                CornerRadius="10"
+                                BorderBrush="#444444"
+                                BorderThickness="1"
+                                MouseEnter="BookBorder_MouseEnter"
+                                MouseLeave="BookBorder_MouseLeave">
+                            <Border.Resources>
+                                <Storyboard x:Key="MouseEnterAnimation">
+                                    <DoubleAnimation Duration="0:0:0.1" 
+                                                     To="1.05" 
+                                                     Storyboard.TargetProperty="RenderTransform.ScaleX"/>
+                                    <DoubleAnimation Duration="0:0:0.1" 
+                                                     To="1.05" 
+                                                     Storyboard.TargetProperty="RenderTransform.ScaleY"/>
+                                </Storyboard>
+                                <Storyboard x:Key="MouseLeaveAnimation">
+                                    <DoubleAnimation Duration="0:0:0.1" 
+                                                     To="1" 
+                                                     Storyboard.TargetProperty="RenderTransform.ScaleX"/>
+                                    <DoubleAnimation Duration="0:0:0.1" 
+                                                     To="1" 
+                                                     Storyboard.TargetProperty="RenderTransform.ScaleY"/>
+                                </Storyboard>
+                            </Border.Resources>
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" 
+                                        Background="#3C3C3C" 
+                                        CornerRadius="5" 
+                                        Height="120">
+                                    <TextBlock Text="📖" 
+                                               FontSize="40" 
+                                               Foreground="#666666" 
+                                               HorizontalAlignment="Center" 
+                                               VerticalAlignment="Center"/>
+                                </Border>
+
+                                <TextBlock Grid.Row="1" 
+                                           Text="{Binding Title}" 
+                                           Foreground="White" 
+                                           FontWeight="Bold" 
+                                           Margin="0,10,0,5" 
+                                           TextWrapping="Wrap"
+                                           TextTrimming="CharacterEllipsis"/>
+
+                                <TextBlock Grid.Row="2" 
+                                           Text="{Binding Author}" 
+                                           Foreground="#888888" 
+                                           FontSize="12"
+                                           TextTrimming="CharacterEllipsis"/>
+
+                                <Button Grid.Row="3" 
+                                        Content="Удалить" 
+                                        Background="Transparent" 
+                                        BorderBrush="#FF4444" 
+                                        BorderThickness="1"
+                                        Foreground="#FF4444"
+                                        Margin="0,10,0,0"
+                                        Padding="5,5"
+                                        Cursor="Hand"
+                                        Click="RemoveFromFavorites_Click"
+                                        Tag="{Binding Id}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Border Grid.Row="1" 
+                x:Name="EmptyStatePanel" 
+                Background="#2D2D2D" 
+                CornerRadius="10" 
+                Padding="30"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Visibility="Collapsed">
+            <StackPanel>
+                <TextBlock 
+                           FontSize="48" 
+                           Foreground="#444444" 
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="В избранном пока пусто" 
+                           FontSize="18" 
+                           Foreground="#888888" 
+                           Margin="0,20,0,10" 
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Добавляйте понравившиеся книги в избранное" 
+                           FontSize="14" 
+                           Foreground="#666666" 
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

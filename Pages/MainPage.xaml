@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:UP_02.Pages"
       mc:Ignorable="d" 
-       d:DesignHeight="800" d:DesignWidth="1000"
+      d:DesignHeight="800" d:DesignWidth="1000"
       Title="MainPage">
 
     <Grid>
@@ -18,20 +18,27 @@
             </Grid.RowDefinitions>
 
             <Border Grid.Row="0" 
-                 Background="White" 
-                 CornerRadius="10" 
-                 Padding="20"
-                 Margin="0,0,0,20">
-                <StackPanel>
-                    <TextBlock Text="Библиотека книг" 
-                            FontSize="28" 
-                            FontWeight="Bold"
-                            Foreground="#2C3E50"/>
-                    <TextBlock Text="Все спарсенные книги в одном месте" 
-                            FontSize="16" 
-                            Foreground="#7F8C8D"
-                            Margin="0,5,0,0"/>
-                </StackPanel>
+                    Background="White" 
+                    CornerRadius="10" 
+                    Padding="20"
+                    Margin="0,0,0,20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Библиотека книг" 
+                                   FontSize="28" 
+                                   FontWeight="Bold"
+                                   Foreground="#2C3E50"/>
+                        <TextBlock Text="Все книги" 
+                                   FontSize="16" 
+                                   Foreground="#7F8C8D"
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Grid>
             </Border>
 
             <Grid Grid.Row="1">
@@ -41,138 +48,127 @@
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0" 
-                     Background="White" 
-                     CornerRadius="10" 
-                     Padding="20"
-                     Margin="0,0,15,0">
+                        Background="White" 
+                        CornerRadius="10" 
+                        Padding="20"
+                        Margin="0,0,15,0">
                     <StackPanel>
-                        <TextBlock Text="Поиск и фильтры" 
-                                FontSize="18" 
-                                FontWeight="SemiBold"
-                                Foreground="#2C3E50"
-                                Margin="0,0,0,15"/>
+                        <TextBlock Text="Поиск" 
+                                   FontSize="18" 
+                                   FontWeight="SemiBold"
+                                   Foreground="#2C3E50"
+                                   Margin="0,0,0,15"/>
 
                         <TextBlock Text="Поиск книги:" 
-                                FontSize="14" 
-                                Foreground="#34495E"
-                                Margin="0,0,0,5"/>
+                                   FontSize="14" 
+                                   Foreground="#34495E"
+                                   Margin="0,0,0,5"/>
                         <TextBox x:Name="SearchBox" 
-                              Padding="10" 
-                              FontSize="14"
-                              Background="#F8F9FA"
-                              BorderBrush="#E0E0E0"
-                              BorderThickness="1"/>
+                                 Padding="10" 
+                                 FontSize="14"
+                                 Background="#F8F9FA"
+                                 BorderBrush="#E0E0E0"
+                                 BorderThickness="1"/>
 
                         <Rectangle Height="1" Fill="#ECF0F1" Margin="0,20,0,20"/>
 
-                        <TextBlock Text="Фильтрация:" 
-                                FontSize="14" 
-                                FontWeight="SemiBold"
-                                Foreground="#34495E"
-                                Margin="0,0,0,10"/>
-
-                        <TextBlock Text="Статус чтения:" 
-                                FontSize="13" 
-                                Foreground="#555555"
-                                Margin="0,0,0,5"/>
-                        <ComboBox x:Name="StatusFilter" 
-                               Padding="10" 
-                               FontSize="13"
-                               Background="#F8F9FA"
-                               BorderBrush="#E0E0E0"
-                               BorderThickness="1">
-                            <ComboBoxItem Content="Все книги" IsSelected="True"/>
-                            <ComboBoxItem Content="Прочитано"/>
-                            <ComboBoxItem Content="В процессе"/>
-                        </ComboBox>
-
-                        <TextBlock Text="Язык книги:" 
-                                FontSize="13" 
-                                Foreground="#555555"
-                                Margin="0,15,0,5"/>
-                        <ComboBox x:Name="LanguageFilter" 
-                               Padding="10" 
-                               FontSize="13"
-                               Background="#F8F9FA"
-                               BorderBrush="#E0E0E0"
-                               BorderThickness="1">
-                            <ComboBoxItem Content="Все языки" IsSelected="True"/>
-                            <ComboBoxItem Content="Русский"/>
-                            <ComboBoxItem Content="Английский"/>
-                        </ComboBox>
-
                         <Button x:Name="RefreshBtn" 
-                             Content="Обновить список" 
-                             FontSize="14"
-                             Background="#3498DB"
-                             Foreground="White"
-                             BorderThickness="0"
-                             Padding="15,10"
-                             Margin="0,25,0,0"
-                             Height="45"
-                             Cursor="Hand"/>
+                                Content="Обновить список" 
+                                FontSize="14"
+                                Background="#3498DB"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Padding="15,10"
+                                Margin="0,0,0,15"
+                                Height="45"
+                                Cursor="Hand"
+                                Click="RefreshBtn_Click"/>
+
+                        <Button x:Name="GoToFavoritesSideBtn"
+                                Content="Избранное"
+                                FontSize="14"
+                                Background="#E67E22"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Padding="15,10"
+                                Margin="0,0,0,15"
+                                Height="45"
+                                Cursor="Hand"
+                                Click="GoToFavorites_Click"/>
+
+                        <Button x:Name="GoToAISideBtn"
+                                Content="Нейросеть"
+                                FontSize="14"
+                                Background="#9B59B6"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Padding="15,10"
+                                Margin="0,0,0,15"
+                                Height="45"
+                                Cursor="Hand"
+                                Click="GoToAIButton_Click"/>
 
                         <Border Background="#ECF0F1" 
-                             CornerRadius="5" 
-                             Padding="10"
-                             Margin="0,20,0,0">
+                                CornerRadius="5" 
+                                Padding="10"
+                                Margin="0,0,0,0">
                             <StackPanel>
                                 <TextBlock Text="Статистика:" 
-                                        FontSize="13" 
-                                        FontWeight="SemiBold"
-                                        Foreground="#2C3E50"
-                                        Margin="0,0,0,5"/>
+                                           FontSize="13" 
+                                           FontWeight="SemiBold"
+                                           Foreground="#2C3E50"
+                                           Margin="0,0,0,5"/>
                                 <TextBlock x:Name="BooksCountText" 
-                                        Text="Всего книг: 0"
-                                        FontSize="13"
-                                        Foreground="#555555"/>
+                                           Text="Всего книг: 0"
+                                           FontSize="13"
+                                           Foreground="#555555"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Column="1" 
-                     Background="White" 
-                     CornerRadius="10" 
-                     Padding="20">
+                        Background="White" 
+                        CornerRadius="10" 
+                        Padding="20">
 
                     <Grid>
                         <Grid x:Name="LoadingGrid" 
-                           Visibility="Collapsed" 
-                           Background="#F8F9FA">
+                              Visibility="Collapsed" 
+                              Background="#F8F9FA">
                             <StackPanel HorizontalAlignment="Center" 
-                                     VerticalAlignment="Center">
+                                        VerticalAlignment="Center">
                                 <ProgressBar IsIndeterminate="True" 
-                                          Width="200" 
-                                          Height="4"
-                                          Foreground="#3498DB"/>
+                                             Width="200" 
+                                             Height="4"
+                                             Foreground="#3498DB"/>
                                 <TextBlock Text="Загружаем книги..." 
-                                        FontSize="14" 
-                                        Foreground="#7F8C8D"
-                                        Margin="0,10,0,0"/>
+                                           FontSize="14" 
+                                           Foreground="#7F8C8D"
+                                           Margin="0,10,0,0"/>
                             </StackPanel>
                         </Grid>
 
                         <Grid x:Name="NoBooksGrid" 
-                           Visibility="Collapsed">
+                              Visibility="Collapsed">
                             <StackPanel HorizontalAlignment="Center" 
-                                     VerticalAlignment="Center">
+                                        VerticalAlignment="Center">
                                 <TextBlock Text="Книги не найдены" 
-                                        FontSize="18" 
-                                        FontWeight="SemiBold"
-                                        Foreground="#2C3E50"
-                                        Margin="0,0,0,5"/>
+                                           FontSize="18" 
+                                           FontWeight="SemiBold"
+                                           Foreground="#2C3E50"
+                                           Margin="0,0,0,5"/>
                                 <TextBlock Text="Попробуйте изменить фильтры или обновить список" 
-                                        FontSize="14" 
-                                        Foreground="#7F8C8D"
-                                        TextAlignment="Center"/>
+                                           FontSize="14" 
+                                           Foreground="#7F8C8D"
+                                           TextAlignment="Center"/>
                             </StackPanel>
                         </Grid>
 
                         <ScrollViewer x:Name="BooksScrollViewer"
-                                   VerticalScrollBarVisibility="Auto">
+                                      VerticalScrollBarVisibility="Auto">
                             <WrapPanel x:Name="BooksPanel" 
-                                    Orientation="Horizontal"/>
+                                       Orientation="Horizontal"/>
                         </ScrollViewer>
                     </Grid>
                 </Border>

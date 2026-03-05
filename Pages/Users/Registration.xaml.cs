@@ -1,95 +1,91 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace UP_02.Pages.Users
 {
-    /// <summary>
-    /// Логика взаимодействия для Registration.xaml
-    /// </summary>
     public partial class Registration : Page
     {
-
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://localhost:7000/api/";
+        private const string BaseUrl = "https://localhost:7000/api/v1/";
 
         public Registration()
         {
             InitializeComponent();
-            _httpClient = new HttpClient();
+
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(BaseUrl),
+                Timeout = TimeSpan.FromSeconds(30)
+            };
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
         private async void OnRegisterClick(object sender, RoutedEventArgs e)
         {
+            if (sender is Button btn) btn.IsEnabled = false;
+
             try
             {
                 if (string.IsNullOrWhiteSpace(LoginBox.Text))
                 {
-                    MessageBox.Show("Введите логин", "Ошибка",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ShowWarning("Введите логин");
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(PasswordBox.Text))
                 {
-                    MessageBox.Show("Введите пароль", "Ошибка",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ShowWarning("Введите пароль");
                     return;
                 }
-                var user = new
+
+                var formData = new FormUrlEncodedContent(new[]
                 {
-                    Login = LoginBox.Text.Trim(),
-                    Password = PasswordBox.Text.Trim(),
-                };
-                var json = JsonSerializer.Serialize(user);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"{BaseUrl}/Auth/Reg", content);
+                    new KeyValuePair<string, string>("Login", LoginBox.Text.Trim()),
+                    new KeyValuePair<string, string>("Password", PasswordBox.Text.Trim())
+                });
+
+                var response = await _httpClient.PostAsync("UsersControllers/Reg", formData);
+                var responseString = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var responseContent = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show("Регистрация успешна! Теперь вы можете войти.",
+                        "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    };
-                    NavigationService?.Navigate(new Pages.Users.Authtorization());
+                    NavigationService?.Navigate(new Authtorization());
                 }
                 else
                 {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-
-                    MessageBox.Show("Ошибка регистрации");
+                    ShowError($"Ошибка регистрации: {response.StatusCode}\n{responseString}");
                 }
             }
             catch (HttpRequestException ex)
             {
-                MessageBox.Show($"Ошибка подключения к серверу: {ex.Message}",
-                    "Ошибка сети", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowError($"Ошибка подключения к серверу: {ex.Message}\nПроверьте, запущен ли API на {BaseUrl}");
+            }
+            catch (TaskCanceledException)
+            {
+                ShowError("Превышено время ожидания ответа от сервера");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Произошла ошибка: {ex.Message}",
-                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowError($"Произошла ошибка: {ex.Message}");
             }
         }
+
         private void GoToLoginLink_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new Registration());
+            NavigationService?.Navigate(new Authtorization());
         }
+
+        private void ShowWarning(string message) =>
+            MessageBox.Show(message, "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+        private void ShowError(string message) =>
+            MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }

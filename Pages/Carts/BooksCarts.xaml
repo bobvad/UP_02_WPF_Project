@@ -4,118 +4,196 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:UP_02.Pages.Carts"
-             mc:Ignorable="d" 
-               d:DesignHeight="250" d:DesignWidth="400">
-    <Grid>
-        <Border Background="White" 
-              BorderBrush="#E0E0E0" 
-              BorderThickness="1"
-              CornerRadius="6"
-              Margin="5"
-              Padding="10">
+             mc:Ignorable="d" Height="209" Width="491">
 
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+    <Border Background="White" 
+            BorderBrush="#E0E0E0" 
+            BorderThickness="1"
+            CornerRadius="8"
+            Margin="5"
+            Padding="12"
+            Cursor="Hand"
+            MouseEnter="Border_MouseEnter"
+            MouseLeave="Border_MouseLeave">
 
-                <Border Grid.Column="0" 
-                      Width="80" 
-                      Height="120" 
-                      CornerRadius="3"
-                      Background="#F5F5F5"
-                      Margin="0,0,10,0">
-                    <Image x:Name="BookImage"
-                         Source="{Binding ImageUrl}"
-                         Stretch="Uniform"
-                         HorizontalAlignment="Center"
-                         VerticalAlignment="Center"/>
-                </Border>
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="Background" Value="White"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#F8F9FA"/>
+                        <Setter Property="BorderBrush" Value="#007BFF"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
 
-                <StackPanel Grid.Column="1" VerticalAlignment="Top">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-                    <TextBlock x:Name="TitleText"
-                             Text="{Binding Title}"
-                             FontSize="14"
-                             FontWeight="Bold"
-                             Foreground="#333333"
-                             TextWrapping="Wrap"
-                             Margin="0,0,0,3"/>
+            <Border Grid.Column="0" 
+                    Width="85" 
+                    CornerRadius="4"
+                    Background="#F0F0F0"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="1"
+                    Margin="6,21,9,30">
+                <Image x:Name="BookImage"
+                     Stretch="Uniform"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"/>
+            </Border>
 
-                    <TextBlock x:Name="AuthorText"
-                             Text="{Binding Author}"
-                             FontSize="12"
-                             Foreground="#666666"
-                             Margin="0,0,0,5"/>
+            <StackPanel Grid.Column="1" 
+                        VerticalAlignment="Top"
+                        Margin="0,-2,0,0">
 
-                    <Border Background="#FAFAFA"
-                          CornerRadius="3"
-                          Padding="5"
-                          Margin="0,0,0,5">
-                        <ScrollViewer MaxHeight="50" VerticalScrollBarVisibility="Auto">
-                            <TextBlock x:Name="DescriptionText"
-                                     Text="{Binding Description}"
-                                     FontSize="11"
-                                     Foreground="#555555"
-                                     TextWrapping="Wrap"/>
-                        </ScrollViewer>
-                    </Border>
+                <TextBlock x:Name="TitleText"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Foreground="#2C3E50"
+                           TextTrimming="CharacterEllipsis"
+                           MaxHeight="40"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,4"/>
 
-                    <Grid Margin="0,0,0,3">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                <TextBlock FontSize="11" Foreground="#5D6D7E" Margin="0,0,0,2">
+                    <Run FontWeight="SemiBold" Foreground="#34495E">Автор:</Run>
+                    <Run x:Name="AuthorText" FontStyle="Italic"/>
+                </TextBlock>
 
-                        <TextBlock Grid.Column="0"
-                                 Text="Язык:"
-                                 FontSize="11"
-                                 FontWeight="SemiBold"
-                                 Foreground="#444444"/>
-                        <TextBlock Grid.Column="1"
-                                 x:Name="LanguageText"
-                                 Text="{Binding Language}"
-                                 FontSize="11"
-                                 Foreground="#444444"
-                                 Margin="3,0,10,0"/>
+                <TextBlock FontSize="11" Foreground="#5D6D7E" Margin="0,0,0,2">
+                    <Run FontWeight="SemiBold" Foreground="#34495E">Жанр:</Run>
+                    <Run x:Name="GenreText" FontStyle="Italic"/>
+                </TextBlock>
 
-                        <TextBlock Grid.Column="2"
-                                 Text="Страниц:"
-                                 FontSize="11"
-                                 FontWeight="SemiBold"
-                                 Foreground="#444444"/>
-                        <TextBlock Grid.Column="3"
-                                 x:Name="PageCountText"
-                                 Text="{Binding PageCount}"
-                                 FontSize="11"
-                                 Foreground="#444444"
-                                 Margin="3,0,0,0"/>
-                    </Grid>
+                <TextBlock FontSize="11" Foreground="#5D6D7E" Margin="0,0,0,2">
+                    <Run FontWeight="SemiBold" Foreground="#34495E">Год:</Run>
+                    <Run x:Name="YearText" FontStyle="Italic"/>
+                </TextBlock>
 
-                    <DockPanel LastChildFill="False">
-                        <TextBlock DockPanel.Dock="Left"
-                                 Text="Статус:"
-                                 FontSize="11"
-                                 FontWeight="SemiBold"
-                                 Foreground="#444444"/>
+                <Grid Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                        <Border DockPanel.Dock="Right"
-                              CornerRadius="8"
-                              Padding="6,2"
-                              Margin="8,0,0,0">
-                            <TextBlock x:Name="StatusText"
-                                     FontSize="10"
-                                     FontWeight="Medium"
-                                     Foreground="White"
-                                     HorizontalAlignment="Center"/>
-                        </Border>
-                    </DockPanel>
+                    <TextBlock Grid.Column="0" FontSize="11" Foreground="#5D6D7E">
+                        <Run FontWeight="SemiBold" Foreground="#34495E">Язык:</Run>
+                        <Run x:Name="LanguageText"/>
+                    </TextBlock>
 
-                </StackPanel>
-            </Grid>
-        </Border>
-    </Grid>
+                    <TextBlock FontSize="11" Foreground="#5D6D7E" Margin="281,0,27,0">
+                        <Run FontWeight="SemiBold" Foreground="#34495E">Страниц:</Run>
+                        <Run x:Name="PageCountText"/>
+                    </TextBlock>
+                </Grid>
+
+                <Grid Margin="0,0,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="FavoriteButton"
+                            Grid.Column="0"
+                            Content="Добавить в избранное"
+                            HorizontalAlignment="Left"
+                            Padding="8,5"
+                            FontSize="9"
+                            FontWeight="SemiBold"
+                            Cursor="Hand"
+                            BorderThickness="1"
+                            BorderBrush="#FFC107"
+                            Margin="0,0,5,0"
+                            Click="FavoriteButton_Click"
+                            MouseEnter="Button_MouseEnter"
+                            MouseLeave="Button_MouseLeave">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#FFF9E6"/>
+                                <Setter Property="Foreground" Value="#856404"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="18"
+                                                    Padding="{TemplateBinding Padding}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="1">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#FFE9B3"/>
+                                        <Setter Property="BorderBrush" Value="#E0A800"/>
+                                    </Trigger>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter Property="Background" Value="#FFD966"/>
+                                        <Setter Property="BorderBrush" Value="#C69500"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button x:Name="ReadButton"
+                            Grid.Column="1"
+                            Content="Читать"
+                            HorizontalAlignment="Right"
+                            Padding="10,5"
+                            FontSize="9"
+                            FontWeight="SemiBold"
+                            Cursor="Hand"
+                            BorderThickness="0"
+                            Click="ReadButton_Click"
+                            MouseEnter="Button_MouseEnter"
+                            MouseLeave="Button_MouseLeave">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#007BFF"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="18"
+                                                    Padding="{TemplateBinding Padding}"
+                                                    BorderThickness="0">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#0056B3"/>
+                                    </Trigger>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter Property="Background" Value="#004085"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+
+                <TextBlock x:Name="FavoriteAddedIndicator"
+                           Text="✓ Добавлено в избранное"
+                           FontSize="9"
+                           Foreground="#28A745"
+                           HorizontalAlignment="Right"
+                           Visibility="Collapsed"/>
+
+            </StackPanel>
+        </Grid>
+    </Border>
 </UserControl>
