@@ -367,7 +367,7 @@ namespace UP_02.Pages.Carts
         };
 
                 var readPage = new PageReadUsers();
-                readPage.Tag = parameters; 
+                readPage.Tag = parameters;
                 MainWindow.init.frame.Navigate(readPage);
             }
             else

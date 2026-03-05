@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using UP_02.Models;
 
 namespace UP_02.Pages
 {
@@ -18,21 +19,13 @@ namespace UP_02.Pages
         private string bookTitle;
         private string bookAuthor;
         private string bookImage;
+        private Book currentBook;
 
         public class BookContentResponse
         {
             public int BookId { get; set; }
             public string Content { get; set; }
             public string Error { get; set; }
-        }
-
-        public class Book
-        {
-            public int Id { get; set; }
-            public string Title { get; set; }
-            public string Author { get; set; }
-            public string Content { get; set; }
-            public string ImageUrl { get; set; }
         }
 
         public PageReadUsers()
@@ -51,19 +44,40 @@ namespace UP_02.Pages
         {
             try
             {
-                if (this.Tag != null && this.Tag is Dictionary<string, string> dict)
+                // Проверяем разные способы передачи данных
+                if (this.Tag != null)
                 {
-                    if (dict.ContainsKey("bookId"))
-                        int.TryParse(dict["bookId"], out bookId);
+                    // Вариант 1: передан словарь параметров
+                    if (this.Tag is Dictionary<string, string> dict)
+                    {
+                        if (dict.ContainsKey("bookId"))
+                            int.TryParse(dict["bookId"], out bookId);
 
-                    if (dict.ContainsKey("title"))
-                        bookTitle = dict["title"];
+                        if (dict.ContainsKey("title"))
+                            bookTitle = dict["title"];
 
-                    if (dict.ContainsKey("author"))
-                        bookAuthor = dict["author"];
+                        if (dict.ContainsKey("author"))
+                            bookAuthor = dict["author"];
 
-                    if (dict.ContainsKey("image"))
-                        bookImage = dict["image"];
+                        if (dict.ContainsKey("image"))
+                            bookImage = dict["image"];
+                    }
+                    // Вариант 2: передан объект Book напрямую
+                    else if (this.Tag is Book book)
+                    {
+                        currentBook = book;
+                        bookId = book.Id;
+                        bookTitle = book.Title;
+                        bookAuthor = book.Author;
+                        bookImage = book.ImageUrl;
+
+                        // Если у книги уже есть контент, показываем его сразу
+                        if (!string.IsNullOrEmpty(book.Content))
+                        {
+                            ShowBookContent(book.Content);
+                            return;
+                        }
+                    }
                 }
 
                 if (bookId == 0)
@@ -74,6 +88,7 @@ namespace UP_02.Pages
                     return;
                 }
 
+                // Отображаем информацию о книге
                 BookTitleText.Text = !string.IsNullOrEmpty(bookTitle) ? bookTitle : "Загрузка...";
                 BookAuthorText.Text = bookAuthor ?? "";
 
@@ -91,6 +106,7 @@ namespace UP_02.Pages
                     catch { }
                 }
 
+                // Загружаем контент
                 LoadBookContent();
             }
             catch (Exception ex)
@@ -103,38 +119,28 @@ namespace UP_02.Pages
         {
             try
             {
-                LoadingPanel.Visibility = Visibility.Visible;
-                ContentScrollViewer.Visibility = Visibility.Collapsed;
+                ShowLoadingPanel();
 
-                var stackPanel = LoadingPanel.Children[0] as StackPanel;
-                if (stackPanel != null)
+                // Сначала пробуем получить книгу из базы данных
+                string dbUrl = $"api/Books/{bookId}";
+                var dbResponse = await client.GetAsync(dbUrl);
+
+                if (dbResponse.IsSuccessStatusCode)
                 {
-                    stackPanel.Children.Clear();
-                    stackPanel.Children.Add(new TextBlock
+                    string json = await dbResponse.Content.ReadAsStringAsync();
+                    try
                     {
-                        Text = "📖",
-                        FontSize = 48,
-                        Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#007ACC")),
-                        HorizontalAlignment = HorizontalAlignment.Center
-                    });
-                    stackPanel.Children.Add(new TextBlock
-                    {
-                        Text = "Загрузка книги...",
-                        FontSize = 18,
-                        Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#666666")),
-                        Margin = new Thickness(0, 20, 0, 0),
-                        HorizontalAlignment = HorizontalAlignment.Center
-                    });
-                    stackPanel.Children.Add(new ProgressBar
-                    {
-                        Width = 200,
-                        Height = 4,
-                        Margin = new Thickness(0, 20, 0, 0),
-                        IsIndeterminate = true,
-                        Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#007ACC"))
-                    });
+                        var bookFromDb = JsonSerializer.Deserialize<Book>(json);
+                        if (bookFromDb != null && !string.IsNullOrEmpty(bookFromDb.Content))
+                        {
+                            ShowBookContent(bookFromDb.Content);
+                            return;
+                        }
+                    }
+                    catch { }
                 }
 
+                // Если в базе нет, пробуем получить через парсинг
                 string url = $"api/ParsingBooks/book/{bookId}/content";
                 var response = await client.GetAsync(url);
 
@@ -144,42 +150,96 @@ namespace UP_02.Pages
 
                     try
                     {
+                        // Пробуем десериализовать как BookContentResponse
                         var result = JsonSerializer.Deserialize<BookContentResponse>(json);
 
                         if (result != null && !string.IsNullOrEmpty(result.Content) && result.Content != "Текст книги не найден")
                         {
-                            BookContentText.Text = result.Content;
+                            ShowBookContent(result.Content);
+
+                            // Сохраняем контент в базу данных
+                            await SaveContentToDatabase(bookId, result.Content);
                         }
                         else
                         {
-                            BookContentText.Text = "Текст книги не найден";
+                            // Если не получилось, пробуем как обычную строку
+                            ShowBookContent(json);
                         }
                     }
                     catch
                     {
-                        BookContentText.Text = json;
+                        // Если JSON не парсится, показываем как есть
+                        ShowBookContent(json);
                     }
                 }
                 else
                 {
-                    BookContentText.Text = $"Ошибка сервера: {response.StatusCode}";
+                    ShowBookContent($"Ошибка сервера: {response.StatusCode}");
                 }
-
-                LoadingPanel.Visibility = Visibility.Collapsed;
-                ContentScrollViewer.Visibility = Visibility.Visible;
             }
             catch (HttpRequestException)
             {
-                LoadingPanel.Visibility = Visibility.Collapsed;
-                ContentScrollViewer.Visibility = Visibility.Visible;
-                BookContentText.Text = "Не удалось подключиться к серверу";
+                ShowBookContent("Не удалось подключиться к серверу");
             }
             catch (Exception ex)
             {
-                LoadingPanel.Visibility = Visibility.Collapsed;
-                ContentScrollViewer.Visibility = Visibility.Visible;
-                BookContentText.Text = $"Ошибка: {ex.Message}";
+                ShowBookContent($"Ошибка: {ex.Message}");
             }
+        }
+
+        private void ShowLoadingPanel()
+        {
+            LoadingPanel.Visibility = Visibility.Visible;
+            ContentScrollViewer.Visibility = Visibility.Collapsed;
+
+            var stackPanel = LoadingPanel.Children[0] as StackPanel;
+            if (stackPanel != null)
+            {
+                stackPanel.Children.Clear();
+                stackPanel.Children.Add(new TextBlock
+                {
+                    Text = "📖",
+                    FontSize = 48,
+                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#007ACC")),
+                    HorizontalAlignment = HorizontalAlignment.Center
+                });
+                stackPanel.Children.Add(new TextBlock
+                {
+                    Text = "Загрузка книги...",
+                    FontSize = 18,
+                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#666666")),
+                    Margin = new Thickness(0, 20, 0, 0),
+                    HorizontalAlignment = HorizontalAlignment.Center
+                });
+                stackPanel.Children.Add(new ProgressBar
+                {
+                    Width = 200,
+                    Height = 4,
+                    Margin = new Thickness(0, 20, 0, 0),
+                    IsIndeterminate = true,
+                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#007ACC"))
+                });
+            }
+        }
+
+        private void ShowBookContent(string content)
+        {
+            BookContentText.Text = content;
+            LoadingPanel.Visibility = Visibility.Collapsed;
+            ContentScrollViewer.Visibility = Visibility.Visible;
+        }
+
+        private async System.Threading.Tasks.Task SaveContentToDatabase(int bookId, string content)
+        {
+            try
+            {
+                var updateModel = new { Content = content };
+                string json = JsonSerializer.Serialize(updateModel);
+                var httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                await client.PatchAsync($"api/Books/{bookId}", httpContent);
+            }
+            catch { }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
