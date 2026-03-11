@@ -221,5 +221,10 @@ namespace UP_02.Pages
         {
             MainWindow.init.frame.Navigate(new PageGameFication());
         }
+
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.init.frame.Navigate(new Users.Authtorization());
+        }
     }
 }

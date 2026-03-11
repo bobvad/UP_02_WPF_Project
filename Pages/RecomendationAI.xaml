@@ -110,7 +110,7 @@
                                    Margin="0,0,0,12"/>
 
                         <Button x:Name="BtnPersonal" 
-                                Content=" Мои рекомендации" 
+                                Content="Рекомендации" 
                                 FontSize="12"
                                 Background="#9B59B6"
                                 Foreground="White"
@@ -120,18 +120,6 @@
                                 Height="35"
                                 Cursor="Hand"
                                 Click="BtnPersonal_Click"/>
-
-                        <Button x:Name="BtnAuto" 
-                                Content=" Авто-подбор" 
-                                FontSize="12"
-                                Background="#E67E22"
-                                Foreground="White"
-                                BorderThickness="0"
-                                Padding="10,8"
-                                Margin="0,0,0,15"
-                                Height="35"
-                                Cursor="Hand"
-                                Click="BtnAuto_Click"/>
                     </StackPanel>
                 </Border>
 

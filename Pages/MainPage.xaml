@@ -26,6 +26,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0">
@@ -38,6 +39,21 @@
                                    Foreground="#7F8C8D"
                                    Margin="0,5,0,0"/>
                     </StackPanel>
+
+                    <Button Grid.Column="2"
+                            x:Name="LogoutButton"
+                            Click="LogoutButton_Click"
+                            Background="#E74C3C"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Padding="20,10"
+                            Cursor="Hand"
+                            Margin="10,0,0,0"
+                            VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Выйти из аккаунта" FontSize="14" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Button>
                 </Grid>
             </Border>
 
@@ -109,7 +125,7 @@
                                 Click="GoToAIButton_Click"/>
 
                         <Button x:Name="GoToCompetitionBtn"
-                                Content=" Соревнования"
+                                Content="Соревнования"
                                 FontSize="14"
                                 Background="#E74C3C"
                                 Foreground="White"
@@ -118,16 +134,12 @@
                                 Margin="0,0,0,15"
                                 Height="45"
                                 Cursor="Hand"
-                                Click="GoToCompetition_Click">
-                            <Button.BitmapEffect>
-                                <DropShadowBitmapEffect Color="#66000000" Direction="320" ShadowDepth="3" Softness="0.3"/>
-                            </Button.BitmapEffect>
-                        </Button>
+                                Click="GoToCompetition_Click"/>
 
                         <Border Background="#ECF0F1" 
                                 CornerRadius="5" 
                                 Padding="10"
-                                Margin="0,0,0,0">
+                                Margin="0,10,0,0">
                             <StackPanel>
                                 <TextBlock Text="Статистика:" 
                                            FontSize="13" 
@@ -138,13 +150,26 @@
                                            Text="Всего книг: 0"
                                            FontSize="13"
                                            Foreground="#555555"/>
+                            </StackPanel>
+                        </Border>
 
-                                <!-- Добавим мини-статистику для соревнований -->
-                                <TextBlock x:Name="UserRankText" 
-                                           Text="Ваше место: -"
-                                           FontSize="12"
-                                           Foreground="#7F8C8D"
-                                           Margin="0,5,0,0"/>
+                        <!-- Информация о пользователе (опционально) -->
+                        <Border Background="#E8F0FE" 
+                                CornerRadius="5" 
+                                Padding="10"
+                                Margin="0,10,0,0"
+                                Visibility="Collapsed"
+                                x:Name="UserInfoPanel">
+                            <StackPanel>
+                                <TextBlock Text="Пользователь:" 
+                                           FontSize="12" 
+                                           FontWeight="SemiBold"
+                                           Foreground="#2C3E50"/>
+                                <TextBlock x:Name="UserNameText" 
+                                           Text="Гость"
+                                           FontSize="13"
+                                           Foreground="#3498DB"
+                                           Margin="0,2,0,0"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>

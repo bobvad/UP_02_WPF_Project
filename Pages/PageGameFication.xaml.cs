@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using UP_02.Models;
 
 namespace UP_02.Pages
 {
@@ -25,6 +26,19 @@ namespace UP_02.Pages
             public int PagesRead { get; set; }
             public string BackgroundColor { get; set; }
             public bool IsCurrentUser { get; set; }
+            public string PlaceColor
+            {
+                get
+                {
+                    return Place switch
+                    {
+                        1 => "#FFD700",
+                        2 => "#C0C0C0", 
+                        3 => "#CD7F32", 
+                        _ => "#2C3E50"  
+                    };
+                }
+            }
         }
 
         public PageGameFication()
@@ -58,10 +72,13 @@ namespace UP_02.Pages
         {
             try
             {
-                int? currentUserId = Models.SessionManager.CurrentUserId;
+                ShowLoading(true);
+
+                int? currentUserId = SessionManager.CurrentUserId;
+
                 string url = "api/Leaders";
 
-                if (currentUserId.HasValue)
+                if (currentUserId.HasValue && currentUserId.Value > 0)
                 {
                     url += $"?currentUserId={currentUserId.Value}";
                 }
@@ -71,16 +88,24 @@ namespace UP_02.Pages
                 if (response.IsSuccessStatusCode)
                 {
                     string json = await response.Content.ReadAsStringAsync();
-                    var leaders = JsonSerializer.Deserialize<List<LeaderModel>>(json, new JsonSerializerOptions
+
+                    var options = new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
-                    });
+                    };
+
+                    var leaders = JsonSerializer.Deserialize<List<LeaderModel>>(json, options);
 
                     if (leaders != null)
                     {
                         Dispatcher.Invoke(() =>
                         {
                             LeadersListView.ItemsSource = leaders;
+
+                            if (currentUserId.HasValue)
+                            {
+                                ScrollToCurrentUser(leaders);
+                            }
                         });
                     }
                 }
@@ -89,16 +114,16 @@ namespace UP_02.Pages
                     string error = await response.Content.ReadAsStringAsync();
                     Dispatcher.Invoke(() =>
                     {
-                        MessageBox.Show($"Ошибка загрузки таблицы лидеров: {response.StatusCode}",
+                        MessageBox.Show($"Ошибка загрузки таблицы лидеров: {response.StatusCode}\n{error}",
                             "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                     });
                 }
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
                 Dispatcher.Invoke(() =>
                 {
-                    MessageBox.Show("Не удалось подключиться к серверу",
+                    MessageBox.Show($"Не удалось подключиться к серверу: {ex.Message}",
                         "Ошибка соединения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 });
             }
@@ -110,15 +135,54 @@ namespace UP_02.Pages
                         "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 });
             }
+            finally
+            {
+                ShowLoading(false);
+            }
+        }
+
+        private void ScrollToCurrentUser(List<LeaderModel> leaders)
+        {
+            if (LeadersListView.Items.Count == 0) return;
+
+            for (int i = 0; i < leaders.Count; i++)
+            {
+                if (leaders[i].IsCurrentUser)
+                {
+                    var item = LeadersListView.Items[i];
+                    LeadersListView.ScrollIntoView(item);
+                    break;
+                }
+            }
+        }
+
+        private void ShowLoading(bool show)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (LoadingIndicator != null)
+                {
+                    LoadingIndicator.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+                }
+
+                if (LeadersListView != null)
+                {
+                    LeadersListView.Opacity = show ? 0.5 : 1;
+                }
+            });
         }
 
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             LoadLeaders();
         }
+
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.init.frame.Navigate(new MainPage());
+            if (NavigationService != null && NavigationService.CanGoBack)
+                NavigationService.GoBack();
+            else
+                NavigationService?.Navigate(new MainPage());
         }
     }
 }

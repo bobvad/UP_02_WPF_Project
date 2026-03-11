@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Input;
-using Newtonsoft.Json;
 using UP_02.Models;
 
 namespace UP_02.Pages.Carts
@@ -19,6 +18,9 @@ namespace UP_02.Pages.Carts
         private Book _currentBook;
         private int _currentUserId => SessionManager.CurrentUserId;
         private string _addedDate;
+
+        // Событие для уведомления об удалении из избранного
+        public event EventHandler FavoriteRemoved;
 
         public Book CurrentBook
         {
@@ -111,8 +113,10 @@ namespace UP_02.Pages.Carts
                 YearText.Text = _currentBook.Year?.ToString() ?? "Не указан";
                 LanguageText.Text = _currentBook.Language ?? "Не указан";
 
+                // Отображение даты добавления, если она есть
                 if (!string.IsNullOrEmpty(_addedDate))
                 {
+                    // Можно добавить TextBlock для отображения даты в разметке
                 }
 
                 if (!string.IsNullOrEmpty(_currentBook.ImageUrl))
@@ -167,8 +171,29 @@ namespace UP_02.Pages.Carts
 
                     if (response.IsSuccessStatusCode)
                     {
-                        var parent = FindParent<Favorites>();
-                        parent?.RefreshFavorites();
+                        // Вариант 1: Использовать событие
+                        FavoriteRemoved?.Invoke(this, EventArgs.Empty);
+
+                        // Вариант 2: Найти родительскую страницу Favorites и вызвать метод
+                        // (раскомментируйте, если нужен этот вариант)
+                        /*
+                        var parentPage = FindParent<Favorites>();
+                        if (parentPage != null)
+                        {
+                            // Предполагается, что в Favorites есть публичный метод LoadFavorites()
+                            parentPage.LoadFavorites();
+                        }
+                        */
+
+                        // Вариант 3: Просто удалить этот контрол из родительской панели
+                        var parentPanel = FindParent<StackPanel>() ?? FindParent<WrapPanel>() as Panel;
+                        if (parentPanel != null)
+                        {
+                            parentPanel.Children.Remove(this);
+                        }
+
+                        MessageBox.Show("Книга успешно удалена из избранного", "Успешно",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {

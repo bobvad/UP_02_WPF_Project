@@ -4,7 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:UP_02.Pages"
-      xmlns:carts="clr-namespace:UP_02.Pages.Carts"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="800"
       Title="Favorites"
@@ -12,6 +11,22 @@
 
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <!-- Стиль для карточки книги -->
+        <Style x:Key="BookCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="0,0,20,20"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Height" Value="320"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#33000000" Direction="315" ShadowDepth="2" BlurRadius="5" Opacity="0.1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
 
     <Grid>
@@ -20,6 +35,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Верхняя панель -->
         <Border Grid.Row="0" 
                 Background="White" 
                 Padding="20" 
@@ -33,6 +49,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
+                <!-- Кнопка назад -->
                 <Button Grid.Column="0" 
                         x:Name="BackButton"
                         Click="BackButton_Click"
@@ -40,7 +57,7 @@
                         BorderThickness="0"
                         Cursor="Hand">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Назад" FontSize="16" Foreground="#007ACC" Margin="5,0,0,0"/>
+                        <TextBlock Text="Назад" FontSize="16" Foreground="#007ACC"/>
                     </StackPanel>
                 </Button>
 
@@ -50,12 +67,14 @@
                                    FontSize="20" 
                                    FontWeight="SemiBold" 
                                    Foreground="#333333"/>
-                        <TextBlock Text="Ваши сохраненные книги" 
+                        <TextBlock x:Name="FavoritesCountText" 
+                                   Text="0 книг"
                                    FontSize="14" 
                                    Foreground="#666666"/>
                     </StackPanel>
                 </StackPanel>
 
+                <!-- Поиск -->
                 <Border Grid.Column="2" 
                         Background="#F5F5F5" 
                         CornerRadius="4" 
@@ -70,18 +89,13 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0"  
-                                   Foreground="#999999" 
-                                   VerticalAlignment="Center" 
-                                   Margin="8,0,0,0"/>
-
                         <TextBox Grid.Column="1" 
                                  x:Name="SearchTextBox"
                                  Background="Transparent" 
                                  BorderThickness="0" 
                                  Foreground="#333333" 
                                  VerticalAlignment="Center"
-                                 Padding="5,0,0,0"
+                                 Padding="5,0,5,0"
                                  FontSize="14"
                                  TextChanged="SearchTextBox_TextChanged"/>
                     </Grid>
@@ -98,12 +112,10 @@
                         Click="GoToCatalog_Click"
                         FontWeight="SemiBold"
                         FontSize="14"/>
-
-                <TextBlock x:Name="FavoritesCountText" 
-                           Visibility="Collapsed"/>
             </Grid>
         </Border>
 
+        <!-- Основная область с книгами -->
         <Grid Grid.Row="1" Background="#F5F5F5">
             <ScrollViewer VerticalScrollBarVisibility="Auto" 
                           HorizontalScrollBarVisibility="Disabled"
@@ -113,18 +125,106 @@
                 <ItemsControl x:Name="FavoritesList">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left"/>
+                            <WrapPanel Orientation="Horizontal"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
+                            <!-- Карточка книги -->
+                            <Border Style="{StaticResource BookCardStyle}"
+                                    Tag="{Binding .}"
+                                    MouseEnter="BookBorder_MouseEnter"
+                                    MouseLeave="BookBorder_MouseLeave">
+                                <Grid Margin="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Дата добавления -->
+                                    <TextBlock Grid.Row="0" 
+                                               Text="{Binding AddedDate, StringFormat='Добавлено: {0}'}" 
+                                               FontSize="10" 
+                                               Foreground="#999999"
+                                               Margin="0,0,0,5"
+                                               HorizontalAlignment="Center"/>
+
+                                    <!-- Обложка книги -->
+                                    <Border Grid.Row="1" 
+                                            Background="#F9F9F9" 
+                                            CornerRadius="4"
+                                            Height="150"
+                                            Margin="0,0,0,10">
+                                        <Grid>
+                                            <!-- Заглушка для обложки -->
+                                            <TextBlock Text="📚" 
+                                                       FontSize="48" 
+                                                       Foreground="#CCCCCC" 
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+
+                                            <!-- Здесь будет реальное изображение, когда добавится -->
+                                            <!--
+                                            <Image Source="{Binding ImageUrl}" 
+                                                   Stretch="Uniform" 
+                                                   MaxHeight="150"/>
+                                            -->
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Название книги -->
+                                    <TextBlock Grid.Row="2" 
+                                               Text="{Binding Title}" 
+                                               FontWeight="SemiBold" 
+                                               Foreground="#333333"
+                                               FontSize="14"
+                                               TextWrapping="Wrap"
+                                               TextAlignment="Center"
+                                               MaxHeight="40"
+                                               Margin="0,0,0,5"/>
+
+                                    <!-- Автор -->
+                                    <TextBlock Grid.Row="3" 
+                                               Text="{Binding Author}" 
+                                               Foreground="#666666"
+                                               FontSize="12"
+                                               TextWrapping="Wrap"
+                                               TextAlignment="Center"
+                                               MaxHeight="40"
+                                               Margin="0,0,0,10"/>
+
+                                    <!-- Кнопка удаления -->
+                                    <Button Grid.Row="4" 
+                                            Content="✖ Удалить"
+                                            Tag="{Binding Id}"
+                                            Click="RemoveFromFavorites_Click"
+                                            Background="#FF4444"
+                                            Foreground="White"
+                                            BorderThickness="0"
+                                            Padding="10,5"
+                                            Cursor="Hand"
+                                            FontSize="11"
+                                            FontWeight="SemiBold"
+                                            Height="28"
+                                            Margin="0,5,0,0">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="4"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </Grid>
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
         </Grid>
 
+        <!-- Пустое состояние -->
         <Border Grid.Row="1" 
                 x:Name="EmptyStatePanel" 
                 Background="White" 
@@ -135,13 +235,12 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Visibility="Collapsed">
-
             <Border.Effect>
                 <DropShadowEffect Color="#33000000" Direction="315" ShadowDepth="2" BlurRadius="5" Opacity="0.1"/>
             </Border.Effect>
 
             <StackPanel>
-                <TextBlock 
+                <TextBlock Text="📚" 
                            FontSize="64" 
                            Foreground="#CCCCCC" 
                            HorizontalAlignment="Center"/>

@@ -182,7 +182,7 @@ namespace UP_02.Pages
 
                     if (result?.success == true)
                     {
-                        DisplayResult($"🎯 Персональные рекомендации:\n\n{result.recommendation}");
+                        DisplayResult($"Персональные рекомендации:\n\n{result.recommendation}");
                         ShowStatus("Персональные рекомендации загружены");
                     }
                     else
@@ -228,8 +228,6 @@ namespace UP_02.Pages
                     {
                         if (result.show == true && !string.IsNullOrWhiteSpace(result.recommendation))
                         {
-                            DisplayResult($"🤖 Авто-подбор для вас:\n\n{result.recommendation}");
-                            ShowStatus("Авто-рекомендации получены");
                         }
                         else if (!string.IsNullOrWhiteSpace(result.message))
                         {
@@ -301,7 +299,6 @@ namespace UP_02.Pages
 
             BtnSimpleAsk.IsEnabled = !isLoading;
             BtnPersonal.IsEnabled = !isLoading;
-            BtnAuto.IsEnabled = !isLoading;
 
             PnlLoading.Visibility = isLoading ? Visibility.Visible : Visibility.Collapsed;
 
