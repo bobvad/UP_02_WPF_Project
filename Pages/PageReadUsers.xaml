@@ -7,7 +7,8 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="PageReadUsers"
-      Loaded="Page_Loaded">
+      Loaded="Page_Loaded"
+      KeyDown="Page_KeyDown">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -88,36 +89,102 @@
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Grid>
 
-        <ScrollViewer Grid.Row="2" 
-                      x:Name="ContentScrollViewer"
-                      x:FieldModifier="public"
-                      VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled"
-                      Background="White"
-                      Visibility="Collapsed">
+        <Grid Grid.Row="2" x:Name="ContentGrid" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-            <Border Padding="50,30"
-                    Background="White"
-                    x:Name="ContentBorder">
+            <ScrollViewer Grid.Row="0" 
+                          x:Name="ContentScrollViewer"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Background="White"
+                          ScrollChanged="ContentScrollViewer_ScrollChanged">
 
-                <StackPanel>
-                    <TextBlock x:Name="BookContentText" 
-                               Text=""
-                               FontSize="16"
-                               FontFamily="Georgia"
-                               TextWrapping="Wrap"
-                               LineHeight="28"
-                               LineStackingStrategy="MaxHeight"
-                               Foreground="#333333"/>
-                </StackPanel>
+                <Border Padding="50,30"
+                        Background="White"
+                        x:Name="ContentBorder">
+
+                    <StackPanel>
+                        <TextBlock x:Name="BookContentText" 
+                                   Text=""
+                                   FontSize="16"
+                                   FontFamily="Georgia"
+                                   TextWrapping="Wrap"
+                                   LineHeight="28"
+                                   LineStackingStrategy="MaxHeight"
+                                   Foreground="#333333"/>
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+
+            <Border Grid.Row="1" 
+                    Background="White" 
+                    Padding="15,10"
+                    BorderBrush="#E0E0E0" 
+                    BorderThickness="0,1,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" 
+                            x:Name="PrevPageButton"
+                            Click="PrevPageButton_Click"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            IsEnabled="False"
+                            ToolTip="Предыдущая страница (←)">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="←" FontSize="24" Foreground="#007ACC" VerticalAlignment="Center"/>
+                            <TextBlock Text="Предыдущая" FontSize="16" Foreground="#007ACC" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <StackPanel Grid.Column="1" 
+                                Orientation="Horizontal" 
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <TextBlock x:Name="CurrentPageText" 
+                                   Text="1" 
+                                   FontSize="16" 
+                                   FontWeight="SemiBold" 
+                                   Foreground="#007ACC"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text=" / " FontSize="16" Foreground="#666666" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="TotalPagesText" 
+                                   Text="0" 
+                                   FontSize="16" 
+                                   Foreground="#666666"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="2" 
+                            x:Name="NextPageButton"
+                            Click="NextPageButton_Click"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            IsEnabled="False"
+                            ToolTip="Следующая страница (→)">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Следующая" FontSize="16" Foreground="#007ACC" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="→" FontSize="24" Foreground="#007ACC" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
             </Border>
-        </ScrollViewer>
+        </Grid>
 
         <Border Grid.Row="3" 
                 Background="White" 
                 Padding="10"
                 BorderBrush="#E0E0E0" 
-                BorderThickness="0,1,0,0"/>
+                BorderThickness="0,1,0,0"
+                Visibility="Collapsed"/>
     </Grid>
-
 </Page>

@@ -6,7 +6,6 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using UP_02.Models;
 
 namespace UP_02.Pages
@@ -15,6 +14,7 @@ namespace UP_02.Pages
     {
         private HttpClient client;
         private int currentUser => SessionManager.CurrentUserId;
+
         public Favorites()
         {
             InitializeComponent();
@@ -36,7 +36,7 @@ namespace UP_02.Pages
                 FavoritesList.ItemsSource = null;
                 EmptyStatePanel.Visibility = Visibility.Collapsed;
 
-                string url = $"api/Isbrannoe/user/{SessionManager.CurrentUserId}"; 
+                string url = $"api/Isbrannoe/user/{SessionManager.CurrentUserId}";
                 var response = await client.GetAsync(url);
 
                 if (response.IsSuccessStatusCode)
@@ -48,21 +48,29 @@ namespace UP_02.Pages
 
                     if (root.TryGetProperty("books", out JsonElement books) && books.GetArrayLength() > 0)
                     {
-                        var list = new List<Models.FavoriteBook>();
+                        var list = new List<Book>();
 
                         foreach (var item in books.EnumerateArray())
                         {
-                            var book = new Models.FavoriteBook
+                            var book = new Book
                             {
-                                Id = item.GetProperty("favoriteId").GetInt32(),
-                                BookId = item.GetProperty("bookId").GetInt32(),
+                                Id = item.GetProperty("bookId").GetInt32(),
                                 Title = item.GetProperty("bookTitle").GetString(),
-                                Author = item.GetProperty("bookAuthor").GetString(),
-                                AddedDate = item.GetProperty("addedDate").GetString()
+                                Author = item.GetProperty("bookAuthor").GetString()
                             };
 
                             if (item.TryGetProperty("bookImage", out JsonElement img))
                                 book.ImageUrl = img.GetString();
+
+                            // Добавляем дополнительные поля, если они есть в JSON
+                            if (item.TryGetProperty("bookGenre", out JsonElement genre))
+                                book.Genre = genre.GetString();
+
+                            if (item.TryGetProperty("bookYear", out JsonElement year))
+                                book.Year = year.GetInt32();
+
+                            if (item.TryGetProperty("bookLanguage", out JsonElement language))
+                                book.Language = language.GetString();
 
                             list.Add(book);
                         }
@@ -70,10 +78,12 @@ namespace UP_02.Pages
                         FavoritesList.ItemsSource = list;
                         FavoritesCountText.Text = GetWord(list.Count);
                         FavoritesList.Visibility = Visibility.Visible;
+                        EmptyStatePanel.Visibility = Visibility.Collapsed;
                     }
                     else
                     {
                         EmptyStatePanel.Visibility = Visibility.Visible;
+                        FavoritesList.Visibility = Visibility.Collapsed;
                         FavoritesCountText.Text = "0 книг";
                     }
                 }
@@ -115,7 +125,7 @@ namespace UP_02.Pages
             {
                 var text = (sender as TextBox)?.Text?.ToLower() ?? "";
 
-                if (FavoritesList.ItemsSource is List<Models.FavoriteBook> books)
+                if (FavoritesList.ItemsSource is List<Book> books)
                 {
                     if (string.IsNullOrEmpty(text))
                     {
@@ -138,48 +148,20 @@ namespace UP_02.Pages
 
         private async void RemoveFromFavorites_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var btn = sender as Button;
-                if (btn?.Tag == null) return;
-
-                int id = (int)btn.Tag;
-
-                if (FavoritesList.ItemsSource is List<Models.FavoriteBook> books)
-                {
-                    var book = books.FirstOrDefault(x => x.Id == id);
-                    if (book == null) return;
-
-                    var result = MessageBox.Show($"Удалить '{book.Title}' из избранного?", "Подтверждение",
-                        MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        var response = await client.DeleteAsync($"api/Isbrannoe/remove?userId={currentUser}&bookId={book.BookId}");
-
-                        if (response.IsSuccessStatusCode)
-                        {
-                            LoadFavorites();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Не удалось удалить книгу", "Ошибка");
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка");
-            }
+            // Этот метод теперь обрабатывается в CartsFavorites
         }
 
-        private void BookBorder_MouseEnter(object sender, MouseEventArgs e)
+        private void ReadBook_Click(object sender, RoutedEventArgs e)
         {
+            // Этот метод теперь обрабатывается в CartsFavorites
         }
 
-        private void BookBorder_MouseLeave(object sender, MouseEventArgs e)
+        private void BackButton_Click(object sender, RoutedEventArgs e)
         {
+            if (NavigationService != null && NavigationService.CanGoBack)
+                NavigationService.GoBack();
+            else
+                NavigationService?.Navigate(new MainPage());
         }
 
         private void GoToCatalog_Click(object sender, RoutedEventArgs e)
@@ -192,6 +174,12 @@ namespace UP_02.Pages
             {
                 MessageBox.Show($"Ошибка: {ex.Message}");
             }
+        }
+
+        // Публичный метод для обновления списка из UserControl
+        public void RefreshFavorites()
+        {
+            LoadFavorites();
         }
     }
 }

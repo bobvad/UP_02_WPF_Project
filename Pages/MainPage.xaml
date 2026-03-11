@@ -108,6 +108,22 @@
                                 Cursor="Hand"
                                 Click="GoToAIButton_Click"/>
 
+                        <Button x:Name="GoToCompetitionBtn"
+                                Content=" Соревнования"
+                                FontSize="14"
+                                Background="#E74C3C"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Padding="15,10"
+                                Margin="0,0,0,15"
+                                Height="45"
+                                Cursor="Hand"
+                                Click="GoToCompetition_Click">
+                            <Button.BitmapEffect>
+                                <DropShadowBitmapEffect Color="#66000000" Direction="320" ShadowDepth="3" Softness="0.3"/>
+                            </Button.BitmapEffect>
+                        </Button>
+
                         <Border Background="#ECF0F1" 
                                 CornerRadius="5" 
                                 Padding="10"
@@ -122,6 +138,13 @@
                                            Text="Всего книг: 0"
                                            FontSize="13"
                                            Foreground="#555555"/>
+
+                                <!-- Добавим мини-статистику для соревнований -->
+                                <TextBlock x:Name="UserRankText" 
+                                           Text="Ваше место: -"
+                                           FontSize="12"
+                                           Foreground="#7F8C8D"
+                                           Margin="0,5,0,0"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>

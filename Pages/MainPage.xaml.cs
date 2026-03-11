@@ -216,5 +216,10 @@ namespace UP_02.Pages
         {
             MainWindow.init.frame.Navigate(new Pages.RecomendationAI());
         }
+
+        private void GoToCompetition_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.init.frame.Navigate(new PageGameFication());
+        }
     }
 }

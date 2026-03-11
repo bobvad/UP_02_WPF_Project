@@ -1,0 +1,169 @@
+﻿<Page x:Class="UP_02.Pages.PageGameFication"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Геймификация"
+      Background="#F5F5F5"
+      Loaded="PageGameFication_Loaded">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Кнопка назад -->
+        <Border Grid.Row="0"
+                Background="Transparent"
+                Padding="0,0,0,10">
+            <Button x:Name="BackButton"
+                    Click="BackButton_Click"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Назад" FontSize="16" Foreground="#007ACC" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Таблица лидеров" 
+                       FontSize="28" 
+                       FontWeight="Bold"
+                       Foreground="#2C3E50"
+                       Grid.Column="0"/>
+
+            <Button Grid.Column="1"
+                    x:Name="RefreshButton"
+                    Click="RefreshButton_Click"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    ToolTip="Обновить">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Обновить" FontSize="16" Foreground="#007ACC" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <Border Background="White"
+                CornerRadius="10"
+                Padding="0"
+                Grid.Row="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" 
+                        Background="#34495E"
+                        CornerRadius="10,10,0,0"
+                        Padding="15,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="120"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Место" 
+                                   FontWeight="Bold" 
+                                   Foreground="White"
+                                   Grid.Column="0"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Пользователь" 
+                                   FontWeight="Bold" 
+                                   Foreground="White"
+                                   Grid.Column="1"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Книг прочитано" 
+                                   FontWeight="Bold" 
+                                   Foreground="White"
+                                   Grid.Column="2"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Страниц" 
+                                   FontWeight="Bold" 
+                                   Foreground="White"
+                                   Grid.Column="3"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <ListView x:Name="LeadersListView"
+                          Grid.Row="1"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="15,10"
+                                    BorderBrush="#ECF0F1"
+                                    BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="120"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0" 
+                                                Orientation="Horizontal"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Place}"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="Bold"
+                                                   FontSize="16"
+                                                   Foreground="#2C3E50"/>
+                                        <TextBlock Text="{Binding Medal}"
+                                                   FontSize="20"
+                                                   Margin="5,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" 
+                                                Orientation="Horizontal"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding UserName}" 
+                                                   FontSize="16"
+                                                   Foreground="#2C3E50"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock 
+                                                   FontSize="20"
+                                                   Margin="5,0,0,0"
+                                                   ToolTip="Это вы!"/>
+                                    </StackPanel>
+
+                                    <TextBlock Text="{Binding BooksRead}" 
+                                               Grid.Column="2"
+                                               HorizontalAlignment="Center"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#27AE60"
+                                               VerticalAlignment="Center"/>
+
+                                    <TextBlock Text="{Binding PagesRead}" 
+                                               Grid.Column="3"
+                                               HorizontalAlignment="Center"
+                                               FontSize="16"
+                                               Foreground="#3498DB"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>
